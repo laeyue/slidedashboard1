@@ -33,6 +33,8 @@ function page(name, updateHash = true) {
 function closeMenu() {
   sidebar.classList.remove('open');
   scrim.classList.remove('show');
+  $('#menuButton').setAttribute('aria-expanded', 'false');
+  $('#menuButton').setAttribute('aria-label', 'Open menu');
   document.body.style.overflow = '';
 }
 
@@ -83,6 +85,7 @@ async function postJson(path, body) {
 
 function closeModal() {
   modal.hidden = true;
+  $('#alertsButton').setAttribute('aria-expanded', 'false');
   document.body.style.overflow = '';
   lastFocus?.focus();
 }
@@ -90,6 +93,7 @@ function closeModal() {
 function openModal() {
   lastFocus = document.activeElement;
   modal.hidden = false;
+  $('#alertsButton').setAttribute('aria-expanded', 'true');
   document.body.style.overflow = 'hidden';
   $('.modal-head button').focus();
   refreshAlerts().catch((error) => toast('Device history unavailable', error.message, 'watch'));
@@ -342,6 +346,7 @@ function textCell(value) { return value === null || value === undefined ? '—' 
 
 function renderHistory(readings) {
   const body = $('#history-rows');
+  const labels = ['Received', 'Observed', 'Soil ADC / wetness', 'Rain ADC / plate wetness', 'MPU alert angle', 'Temperature', 'Device health'];
   body.replaceChildren();
   const rows = [...(readings || [])].reverse().slice(0, 100);
   $('#history-status').textContent = rows.length
@@ -361,7 +366,12 @@ function renderHistory(readings) {
     health.mpu === 'ONLINE' && absoluteMpuAngle(readings) !== null ? `${absoluteMpuAngle(readings).toFixed(2)}°` : '—',
     readings.temperature_c == null ? '—' : `${Number(readings.temperature_c).toFixed(1)}°C`,
     `MPU ${textCell(health.mpu)} · Soil ${textCell(health.soil)} · Rain ${textCell(health.rain)} · DHT11 ${textCell(health.dht11)}`];
-    values.forEach((value) => { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); });
+    values.forEach((value, index) => {
+      const cell = document.createElement('td');
+      cell.dataset.label = labels[index];
+      cell.textContent = value;
+      row.append(cell);
+    });
     body.append(row);
   }
 }
@@ -516,12 +526,24 @@ async function refresh() {
 }
 
 function bindControls() {
-  $('#menuButton').onclick = () => { sidebar.classList.add('open'); scrim.classList.add('show'); document.body.style.overflow = 'hidden'; };
+  $('#menuButton').onclick = () => {
+    sidebar.classList.add('open'); scrim.classList.add('show');
+    $('#menuButton').setAttribute('aria-expanded', 'true');
+    $('#menuButton').setAttribute('aria-label', 'Close menu');
+    document.body.style.overflow = 'hidden';
+  };
   $('#collapseButton').onclick = () => {
-    document.documentElement.classList.toggle('collapsed');
+    const collapsed = document.documentElement.classList.toggle('collapsed');
+    $('#collapseButton').setAttribute('aria-expanded', String(!collapsed));
+    $('#collapseButton').setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation');
     try { localStorage.setItem('slide-collapse', document.documentElement.classList.contains('collapsed')); } catch { /* Sidebar preference is optional. */ }
   };
-  try { document.documentElement.classList.toggle('collapsed', localStorage.getItem('slide-collapse') === 'true'); } catch { /* Browser storage may be disabled. */ }
+  try {
+    const collapsed = localStorage.getItem('slide-collapse') === 'true';
+    document.documentElement.classList.toggle('collapsed', collapsed);
+    $('#collapseButton').setAttribute('aria-expanded', String(!collapsed));
+    $('#collapseButton').setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation');
+  } catch { /* Browser storage may be disabled. */ }
   scrim.onclick = closeMenu;
   $$('[data-view]').forEach((element) => element.addEventListener('click', (event) => {
     event.preventDefault(); page(element.dataset.view);

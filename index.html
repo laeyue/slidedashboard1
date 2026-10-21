@@ -19,21 +19,21 @@
       <img src="assets/slide-logo.png" alt="">
       <span><strong>S.L.I.D.E.</strong><small>Field monitor</small></span>
     </a>
-    <button id="collapseButton" aria-label="Collapse navigation">‹</button>
-    <nav aria-label="Main navigation">
+    <button id="collapseButton" aria-controls="sidebar" aria-expanded="true" aria-label="Collapse navigation">‹</button>
+    <nav class="primary-nav" aria-label="Main navigation">
       <a href="#overview" data-view="overview" aria-current="page"><i>▦</i><span>Overview</span></a>
-      <button id="alertsButton" type="button"><i>♧</i><span>Alerts</span><b id="alertCount" hidden></b></button>
+      <button id="alertsButton" type="button" aria-haspopup="dialog" aria-controls="modal" aria-expanded="false"><i>♧</i><span>Alerts</span><b id="alertCount" hidden></b></button>
       <a href="#history" data-view="history"><i>↶</i><span>History</span></a>
-      <a href="#sites" data-view="sites"><i>⌖</i><span>Monitoring site</span></a>
+      <a href="#sites" data-view="sites" aria-label="Monitoring site"><i>⌖</i><span>Site</span></a>
     </nav>
     <div class="mountains" aria-hidden="true"></div>
-    <a class="settings" href="#settings" data-view="settings"><i>⚙</i><span>Station settings</span></a>
+    <a class="settings" href="#settings" data-view="settings" aria-label="Station settings"><i>⚙</i><span>Settings</span></a>
   </aside>
   <button id="scrim" aria-label="Close menu"></button>
 
   <main>
     <div class="mobile">
-      <button id="menuButton" type="button" aria-label="Open menu">☰</button>
+      <button id="menuButton" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Open menu">☰</button>
       <img src="assets/slide-logo.png" alt="">
       <strong>S.L.I.D.E.</strong>
       <span id="mobileStatus" class="status-chip" data-state="loading">Loading</span>
@@ -78,17 +78,6 @@
         </article>
       </div>
 
-      <section class="panel chart-panel delivery-panel" aria-labelledby="delivery-heading">
-        <div class="panel-head"><div><h2 id="delivery-heading">Upload delivery</h2><p class="chart-note">Device-side event queue counters from the latest received snapshot.</p></div></div>
-        <dl>
-          <div><dt>Queued event revisions</dt><dd id="delivery-queue">Waiting for telemetry</dd></div>
-          <div><dt>Events discarded on queue overflow</dt><dd id="delivery-dropped">Waiting for telemetry</dd></div>
-          <div><dt>Event upload retries this boot</dt><dd id="delivery-retries">Waiting for telemetry</dd></div>
-          <div><dt>Last accepted upload (device uptime)</dt><dd id="delivery-last-success">Waiting for telemetry</dd></div>
-        </dl>
-        <p id="delivery-observed-at" class="chart-note">Delivery counters are not yet available.</p>
-      </section>
-
       <section class="panel chart-panel">
         <div class="panel-head">
           <div><h2>Recorded conditions</h2><p class="chart-note">Each trace uses its own unit and scale. Missing samples remain gaps.</p></div>
@@ -104,6 +93,17 @@
           <article><h3>Air temperature (°C)</h3><svg id="air-chart" viewBox="0 0 300 90" role="img" aria-label="Air temperature history"></svg><p id="air-chart-range" class="chart-note">Waiting for history.</p></article>
         </div>
       </section>
+
+      <details class="panel delivery-panel">
+        <summary><span><strong id="delivery-heading">Upload delivery</strong><small>Device event queue and retry details</small></span><i aria-hidden="true">⌄</i></summary>
+        <dl>
+          <div><dt>Queued event revisions</dt><dd id="delivery-queue">Waiting for telemetry</dd></div>
+          <div><dt>Events discarded on queue overflow</dt><dd id="delivery-dropped">Waiting for telemetry</dd></div>
+          <div><dt>Event upload retries this boot</dt><dd id="delivery-retries">Waiting for telemetry</dd></div>
+          <div><dt>Last accepted upload (device uptime)</dt><dd id="delivery-last-success">Waiting for telemetry</dd></div>
+        </dl>
+        <p id="delivery-observed-at" class="chart-note">Delivery counters are not yet available.</p>
+      </details>
     </section>
 
     <section class="view" data-page="history" hidden>
@@ -114,7 +114,7 @@
       <section class="panel section">
         <div class="filters"><label>Period<select id="historyRange"><option value="24h">Last 24 hours</option><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option></select></label></div>
         <p id="history-status" class="chart-note" role="status">Waiting for the station service.</p>
-        <div class="table"><table><thead><tr><th>Received</th><th>Observed</th><th>Soil ADC / wetness</th><th>Rain ADC / plate wetness</th><th>MPU alert angle</th><th>Temperature</th><th>Device health</th></tr></thead><tbody id="history-rows"><tr><td colspan="7">No readings have arrived.</td></tr></tbody></table></div>
+        <div class="table"><table aria-label="Sensor reading history"><thead><tr><th>Received</th><th>Observed</th><th>Soil ADC / wetness</th><th>Rain ADC / plate wetness</th><th>MPU alert angle</th><th>Temperature</th><th>Device health</th></tr></thead><tbody id="history-rows"><tr><td colspan="7">No readings have arrived.</td></tr></tbody></table></div>
       </section>
     </section>
 
